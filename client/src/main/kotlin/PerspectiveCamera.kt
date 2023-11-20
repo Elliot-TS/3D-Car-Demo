@@ -79,6 +79,7 @@ class PerspectiveCamera() : UniformProvider("camera") {
       } 
       mouseDelta.set()
     }
+    /*
     if("W" in keysPressed) { 
       position += ahead * (speed * dt) 
     } 
@@ -97,6 +98,7 @@ class PerspectiveCamera() : UniformProvider("camera") {
     if("Q" in keysPressed) { 
       position -= up * (speed * dt) 
     } 
+    */
 
     update()
     ahead = (Vec3(0.0f, 0.0f, -1.0f).xyz0 * rotationMatrix).xyz

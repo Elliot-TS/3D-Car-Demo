@@ -77,6 +77,7 @@ class Scene (
 
   // LABTODO: replace with 3D camera
   val camera = PerspectiveCamera().apply{
+    position.set(30f, 10f, 30f)
     update()
   }
 

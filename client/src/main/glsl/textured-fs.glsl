@@ -20,7 +20,7 @@ uniform struct {
 uniform struct {
   vec4 position;
   vec3 powerDensity;
-} lights[8];
+} lights[2];
 
 out vec4 fragmentColor;
 

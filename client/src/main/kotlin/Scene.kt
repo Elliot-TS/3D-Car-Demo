@@ -17,7 +17,10 @@ class Scene (
 
   val vsTextured = Shader(gl, GL.VERTEX_SHADER, "textured-vs.glsl")
   val fsTextured = Shader(gl, GL.FRAGMENT_SHADER, "textured-fs.glsl")
+  val fsSolid = Shader(gl, GL.FRAGMENT_SHADER, "solid-fs.glsl")
   val texturedProgram = Program(gl, vsTextured, fsTextured)
+  val solidProgram = Program(gl, vsTextured, fsSolid)
+
 
   val texturedQuadGeometry = TexturedQuadGeometry(gl)
 
@@ -46,24 +49,29 @@ class Scene (
     "media/chevy/chassis.json")
   val chevyChassisMesh = Mesh(chevyMaterial, chevyChassisGeometries[0])
 
+  val wheelGeometries = jsonLoader.loadGeometries(
+    gl, "media/chevy/wheel.json"
+  )
+  val wheelMesh = Mesh(chevyMaterial, wheelGeometries[0])
+
   val lights = Array<Light>(2) { Light(it) }
   init{
     lights[0].position.set(1.0f, 1.0f, 1.0f, 0.0f).normalize();
     lights[0].powerDensity.set(1.0f, 1.0f, 1.0f);
-    lights[1].position.set(10.0f, 10.0f, 10.0f, 1.0f).normalize();
-    lights[1].powerDensity.set(0.0f, 0.0f, 1.0f);
+    lights[1].position.set(-1.0f, 1.0f, 1.0f, 0f).normalize();
+    lights[1].powerDensity.set(0.6f, 0.6f, 1.0f);
   }
-
 
   val gameObjects = ArrayList<GameObject>()
 
-  val avatar = GameObject(chevyChassisMesh).apply{
+  val avatar = CarObject(chevyChassisMesh, wheelMesh).apply{
     position.set(0f, 0f, 0f)
     scale.set(1f, 1f, 1f)
   }
   init {
     // LABTODO: create and add game object using meshes loaded from JSON
     gameObjects += avatar
+    gameObjects.addAll(avatar.wheels)
     gameObjects += GameObject(backgroundMesh)
   }
 

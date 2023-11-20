@@ -4,32 +4,44 @@ import kotlin.math.PI
 import kotlin.math.floor
 
 class CarObject (
-	vararg val meshes : Mesh
-) : GameObject(*meshes) {
+  val chassisMesh: Mesh,
+  val wheelMesh: Mesh
+) : GameObject(chassisMesh) {
 
-	override var move = object: Motion(this) {
+  override var move = object: Motion(this) {
     override operator fun invoke(
-        dt : Float = 0.016666f,
-        t : Float = 0.0f,
-        keysPressed : Set<String> = emptySet<String>(),
-        gameObjects : List<GameObject> = emptyList<GameObject>()
-        ) : Boolean {
+      dt : Float,
+      t : Float,
+      keysPressed : Set<String>,
+      gameObjects : List<GameObject>
+    ) : Boolean {
       // gameObject.roll += dt 
       return true
     }
-
-  val wheels = MutableList<GameObject>()
-
-  init {
-	  val vsTextured = Shader(gl, GL.VERTEX_SHADER, "textured-vs.glsl")
-	  val fsSolid = Shader(gl, GL.FRAGMENT_SHADER, "solid-fs.glsl")
-	  val solidProgram = Program(gl, vsTextured, fsSolid)
-
-	  val wheelMaterial = Material(solidProgram).apply {
-	    this["color"]?.set(Vec3(1.0f, 0.0f, 0.7f))
-  	}
-  
   }
+
+  val frontRightWheel = GameObject(wheelMesh).also {
+    it.position.set(-7f,-3.5f,13.8f)
+    it.parent = this
+  }
+  val frontLeftWheel = GameObject(wheelMesh).also {
+    it.position.set(7f,-3.5f,13.8f)
+    it.parent = this
+  }
+  val backRightWheel = GameObject(wheelMesh).also {
+    it.position.set(-7f,-3.5f,-11f)
+    it.parent = this
+  }
+  val backLeftWheel = GameObject(wheelMesh).also {
+    it.position.set(7f,-3.5f,-11f)
+    it.parent = this
+  }
+  val wheels = arrayOf(
+    frontLeftWheel, frontRightWheel,
+    backLeftWheel, backRightWheel
+  )
+
+}
 
 
 

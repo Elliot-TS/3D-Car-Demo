@@ -35,23 +35,16 @@ class Scene (
   val backgroundMesh = Mesh(backgroundMaterial, texturedQuadGeometry)
 
   // LABTODO: load geometries from the JSON file, create Meshes  
-  val slowpokeTexture = Texture2D(gl, "media/slowpoke/YadonDh.png")
-  val slowpokeEyeTexture = Texture2D(gl, "media/slowpoke/YadonEyeDh.png")  
-  val slowpokeMaterials = arrayOf(
-    Material(texturedProgram).apply {
-      this["colorTexture"]?.set(slowpokeTexture)
+  val chevyTexture = Texture2D(gl, "media/chevy/chevy.png")
+  val chevyMaterial = Material(texturedProgram).apply {
+      this["colorTexture"]?.set(chevyTexture)
       this["envTexture"]?.set( skyCubeTexture )
-    },
-    Material(texturedProgram).apply {
-      this["colorTexture"]?.set(slowpokeEyeTexture)
-      this["envTexture"]?.set( skyCubeTexture )
-    }
-  )
+  }
+  
   val jsonLoader = JsonLoader()
-  val slowpokeGeometries = jsonLoader.loadGeometries(gl,
-    "media/slowpoke/slowpoke.json")
-  val slowpokeMeshes = 
-    (slowpokeMaterials zip slowpokeGeometries).map{ Mesh(it.first, it.second) }.toTypedArray()
+  val chevyChassisGeometries = jsonLoader.loadGeometries(gl,
+    "media/chevy/chassis.json")
+  val chevyChassisMesh = Mesh(chevyMaterial, chevyChassisGeometries[0])
 
   val lights = Array<Light>(2) { Light(it) }
   init{
@@ -64,7 +57,7 @@ class Scene (
 
   val gameObjects = ArrayList<GameObject>()
 
-  val avatar = GameObject(*slowpokeMeshes).apply{
+  val avatar = GameObject(chevyChassisMesh).apply{
     position.set(0f, 0f, 0f)
     scale.set(1f, 1f, 1f)
   }

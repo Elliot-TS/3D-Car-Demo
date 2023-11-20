@@ -40,10 +40,10 @@ open class GameObject(
         keysPressed : Set<String> = emptySet<String>(),
         gameObjects : List<GameObject> = emptyList<GameObject>()
         ) : Boolean {
-      gameObject.roll += dt 
+      // gameObject.roll += dt 
       return true
     }
   }
-  var move = Motion(this)
+  open var move = Motion(this)
 
 }

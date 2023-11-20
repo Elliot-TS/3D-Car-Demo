@@ -95,7 +95,7 @@ class Scene (
 
     //LABTODO: move camera
     camera.move(dt, keysPressed)
-    lights[0].position.set(sin(t), cos(t), cos(2f*t), 0f).normalize()
+    // lights[0].position.set(sin(t), cos(t), cos(2f*t), 0f).normalize()
     
     gl.clearColor(0.3f, 0.0f, 0.3f, 1.0f)//## red, green, blue, alpha in [0, 1]
     gl.clearDepth(1.0f)//## will be useful in 3D ˙HUN˙ 3D-ben lesz hasznos

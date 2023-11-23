@@ -27,7 +27,7 @@ open class GameObject(
       scale(scale).
       rotate(roll).
       rotate(pitch, 1f, 0f, 0f).
-      rotate(yaw, 1.0f, 0.0f, 0.0f).
+      rotate(yaw, 0.0f, 1.0f, 0.0f).
       translate(position)
     parent?.let{ parent -> 
       modelMatrix *= parent.modelMatrix

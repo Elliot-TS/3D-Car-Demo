@@ -2,32 +2,72 @@ import vision.gears.webglmath.*
 import kotlin.math.exp
 import kotlin.math.PI
 import kotlin.math.floor
+import kotlin.math.atan2
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class CarObject (
   val chassisMesh: Mesh,
   val wheelMesh: Mesh
 ) : GameObject(chassisMesh) {
 
+  val width = 14f
+  val length = 24.8f
+  val originZ = 11f // the z component of the origin relative to the back wheels
+
   override var move = object: Motion(this) {
     val car = gameObject as CarObject
     val speed = 0.4f
+    var curve = 0.0f
 
     // Move the car forward/backward applying steering as needed
     // (wheels have a radius of 2.5)
     fun moveCar(
       amount : Float
     ) {
-      car.position += Vec3(0f, 0f, 5f*3.14f*amount)
-      car.wheels.forEach {
-          it.pitch += amount * 6.28f
+      val s = PI.toFloat()*5f*amount // curve distance that the car moves
+      if (curve == 0.0f) {
+        car.position += Vec3(0f, 0f, s)
+        
+      }
+      else {
+        val baseDistance = abs(1/curve) + width/length/2f
+        val origin2Base = originZ / length
+        val originDistance = sqrt( baseDistance*baseDistance + origin2Base*origin2Base)
+        val C = originDistance * PI.toFloat()*s
+        val deltaAngle = 2f*PI.toFloat()*s / C
+        car.position += Vec3(
+          originDistance * cos(deltaAngle), 
+          0f, 
+          originDistance * sin(deltaAngle))
+
+        car.wheels.forEach {
+            it.pitch += amount * PI.toFloat()*2.0f
+        }
       }
     }
 
     // Turn the wheels left/right
     // If the wheels are already at their maximum
     // angle, don't rotate them anymore
-    fun steer( amount: Float )
-    { }
+    fun steer( amount: Float ){
+      curve += amount
+      var thetaLeft = 0.0f
+      var thetaRight = 0.0f
+
+      if (curve < 0) {
+        thetaLeft = atan2(1f/curve, 1f) + PI.toFloat()/2f
+        thetaRight = atan2(1f/curve + width/length, 1f) + PI.toFloat()/2.0f
+      } else {
+        thetaRight = atan2(1f/curve, 1f) - PI.toFloat()/2f
+        thetaLeft = atan2(1f/curve + width/length, 1f) - PI.toFloat()/2.0f 
+      }
+
+      frontRightWheel.yaw = thetaRight
+      frontLeftWheel.yaw = thetaLeft
+    }
 
     // Move the car when keys are pressed
     override operator fun invoke(

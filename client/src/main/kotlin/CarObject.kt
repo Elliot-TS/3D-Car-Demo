@@ -30,11 +30,13 @@ class CarObject (
       val s = PI.toFloat()*5f*amount // curve distance that the car moves
       if (curve == 0.0f) {
         car.position += Vec3(0f, 0f, s)
-        
       }
       else {
         val baseDistance = abs(1/curve) + width/length/2f
         val origin2Base = originZ / length
+
+        val circleOrigin = car.position + Vec3(baseDistance, 0f, origin2Base)
+
         val originDistance = sqrt( baseDistance*baseDistance + origin2Base*origin2Base)
         val C = originDistance * PI.toFloat()*s
         val deltaAngle = 2f*PI.toFloat()*s / C

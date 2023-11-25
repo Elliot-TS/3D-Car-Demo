@@ -7,6 +7,7 @@ import vision.gears.webglmath.Vec2
 import vision.gears.webglmath.Vec3
 import vision.gears.webglmath.Vec4
 import vision.gears.webglmath.Mat4
+import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sin
@@ -65,7 +66,7 @@ class Scene (
   val gameObjects = ArrayList<GameObject>()
 
   val avatar = CarObject(chevyChassisMesh, wheelMesh).apply{
-    position.set(0f, 0f, 0f)
+    position.set(40f, 0f, 40f)
     scale.set(1f, 1f, 1f)
   }
   init {
@@ -77,7 +78,9 @@ class Scene (
 
   // LABTODO: replace with 3D camera
   val camera = PerspectiveCamera().apply{
-    position.set(30f, 10f, 30f)
+    position.set(30f, 10f, 20f)
+    pitch = -PI.toFloat() / 2f
+    yaw = PI.toFloat()
     update()
   }
 

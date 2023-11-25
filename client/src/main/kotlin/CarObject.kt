@@ -19,7 +19,7 @@ class CarObject (
 
   override var move = object: Motion(this) {
     val car = gameObject as CarObject
-    val speed = 0.4f
+    val speed = 0.7f
     var curve = 0.0f
 
     // Move the car forward/backward applying steering as needed
@@ -32,22 +32,33 @@ class CarObject (
         car.position += Vec3(0f, 0f, s)
       }
       else {
-        val baseDistance = abs(1/curve) + width/length/2f
-        val origin2Base = originZ / length
+        val baseDistance = abs(length/curve) + width/2f
+        val origin2Base = originZ
 
-        val circleOrigin = car.position + Vec3(baseDistance, 0f, origin2Base)
+        console.log(baseDistance)
+        val sign = -curve / abs(curve)
+        val circleOrigin = Vec4(sign*baseDistance, 0f, -origin2Base, 1f) * car.modelMatrix
+        //val circleOriginLeft = Vec4(0f, 30f, 0f, 1f)
 
-        val originDistance = sqrt( baseDistance*baseDistance + origin2Base*origin2Base)
-        val C = originDistance * PI.toFloat()*s
-        val deltaAngle = 2f*PI.toFloat()*s / C
-        car.position += Vec3(
-          originDistance * cos(deltaAngle), 
-          0f, 
-          originDistance * sin(deltaAngle))
+        //val originDistance = circleOrigin.length()
+        val originDistance = sqrt(baseDistance*baseDistance + origin2Base*origin2Base)
+        val C = originDistance * PI.toFloat()*2f
+        val deltaAngle = sign*2f*PI.toFloat()*s / C
 
-        car.wheels.forEach {
-            it.pitch += amount * PI.toFloat()*2.0f
-        }
+        val rotMatrix = Mat4()
+          .translate(-circleOrigin.xyz)
+          .rotate(deltaAngle, 0f, 1f, 0f)
+          .translate(circleOrigin.xyz)
+
+        car.position.set((car.position.xyz1 * rotMatrix).xyz)
+        car.yaw += deltaAngle
+
+        //frontRightWheel.position.set(circleOriginLeft.xyz)
+
+      }
+
+      car.wheels.forEach {
+          it.pitch += amount * PI.toFloat()*2.0f
       }
     }
 
@@ -56,15 +67,16 @@ class CarObject (
     // angle, don't rotate them anymore
     fun steer( amount: Float ){
       curve += amount
-      var thetaLeft = 0.0f
-      var thetaRight = 0.0f
+      if (curve >= 2f) curve = 2f
 
-      if (curve < 0) {
-        thetaLeft = atan2(1f/curve, 1f) + PI.toFloat()/2f
-        thetaRight = atan2(1f/curve + width/length, 1f) + PI.toFloat()/2.0f
-      } else {
-        thetaRight = atan2(1f/curve, 1f) - PI.toFloat()/2f
-        thetaLeft = atan2(1f/curve + width/length, 1f) - PI.toFloat()/2.0f 
+      if (curve <= -2f) curve = -2f
+
+      var thetaLeft = atan2(1f/abs(curve), 1f) - PI.toFloat()/2f
+      var thetaRight = atan2(1f/abs(curve) + width/length, 1f) - PI.toFloat()/2.0f
+
+      if (curve < 0f) {
+        thetaRight *= -1
+        thetaLeft *= -1
       }
 
       frontRightWheel.yaw = thetaRight

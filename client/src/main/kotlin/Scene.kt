@@ -38,6 +38,8 @@ class Scene (
         "media/posz512.jpg", "media/negz512.jpg"
     )  
     val chevyTexture = Texture2D(gl, "media/chevy/chevy.png")
+    val slowpokeTexture = Texture2D(gl, "media/slowpoke/YadonDh.png")
+    val slowpokeEyeTexture = Texture2D(gl, "media/slowpoke/YadonEyeDh.png")
     val roadTexture = Texture2D(gl, "media/road.jpg")
 
     // Materials
@@ -47,11 +49,26 @@ class Scene (
     val chevyMaterial = Material(texturedProgram).apply {
         this["colorTexture"]?.set(chevyTexture)
         this["envTexture"]?.set( skyCubeTexture )
+        this["reflective"]?.set(0f)
     }
     val groundMaterial = Material(texturedProgram).apply {
         this["colorTexture"]?.set(roadTexture)
         this["envTexture"]?.set( skyCubeTexture )
+        this["reflective"]?.set(0f)
     }
+    val slowpokeMaterials = arrayOf(
+        Material(texturedProgram).apply {
+            this["colorTexture"]?.set(slowpokeTexture)
+            this["envTexture"]?.set( skyCubeTexture )
+            this["reflective"]?.set(1f)
+        },
+        Material(texturedProgram).apply {
+            this["colorTexture"]?.set(slowpokeEyeTexture)
+            this["envTexture"]?.set( skyCubeTexture )
+            this["reflective"]?.set(1f)
+        }
+    )
+
 
     // Geometry
     val jsonLoader = JsonLoader()
@@ -65,7 +82,17 @@ class Scene (
     val chevyChassisMesh = Mesh(chevyMaterial, chevyChassisGeometries[0])
     val wheelMesh = Mesh(chevyMaterial, wheelGeometries[0])
     val groundMesh = Mesh(groundMaterial, groundGeometry)
+    val slowpokeMeshes = jsonLoader.loadMeshes(
+        gl,
+        "media/slowpoke/slowpoke.json",
+        *slowpokeMaterials
+    )
 
+
+    val avatar = CarObject(chevyChassisMesh, wheelMesh).apply{
+        position.set(40f, 0f, 40f)
+        scale.set(1f, 1f, 1f)
+    }
     // Lights
     val lights = Array<Light>(5) { Light(it) }
     val leftHeadlight = lights[0]
@@ -87,31 +114,44 @@ class Scene (
         lights[4].powerDensity.set(100f, 100f, 1000f, 0f)
 
         // Head Lights
-        leftHeadlight.position.set(0f, 5.6f, -20f, 1f)
-        leftHeadlight.direction.set(0f,-1f,0f,0.9f)
-        leftHeadlight.powerDensity.set(1000f, 100f, 100f, 0f)
+        leftHeadlight.powerDensity.set(700f, 600f, 300f, 0f)
+        rightHeadlight.powerDensity.set(700f, 600f, 300f, 0f)
+        updateHeadlights()
+    }
 
-        rightHeadlight.position.set(0f, 5.6f, -20f, 1f)
-        rightHeadlight.direction.set(0f,-1f,0f,0.9f)
-        rightHeadlight.powerDensity.set(1000f, 100f, 100f, 0f)
+    fun updateHeadlights () {
+        leftHeadlight.position.set(
+            Vec4(-7f, -2.5f, 16f, 1f) *
+            avatar.modelMatrix
+        )
+        rightHeadlight.position.set(
+            Vec4(7f, -2.5f, 16f, 1f) *
+            avatar.modelMatrix
+        )
+        leftHeadlight.direction.set( Vec4(
+            (Vec4(0f,-0.1f,1f,0f) * avatar.modelMatrix).xyz,
+            0.7f // Angle
+        ))
+        rightHeadlight.direction.set( Vec4(
+            (Vec4(0f,-0.1f,1f,0f) * avatar.modelMatrix).xyz,
+            0.7f // Angle
+        ))
     }
 
     // Game Objects
     val gameObjects = ArrayList<GameObject>()
-
-    val avatar = CarObject(chevyChassisMesh, wheelMesh).apply{
-        position.set(40f, 0f, 40f)
-        scale.set(1f, 1f, 1f)
-    }
     init {
         // LABTODO: create and add game object using meshes loaded from JSON
         gameObjects += avatar
         gameObjects.addAll(avatar.wheels)
         gameObjects += GameObject(backgroundMesh)
         gameObjects += GameObject(groundMesh).apply {
-            position.set(0f, -6f, 0f)
+            position.set(0f, -6.5f, 0f)
             scale.set(1000f, 1000f, 1f)
             pitch = -3.14f / 2f
+        }
+        gameObjects += GameObject(*slowpokeMeshes).apply {
+            position.set(10f, 3f, 10f)
         }
     }
 
@@ -146,6 +186,7 @@ class Scene (
 
         //LABTODO: move camera
         camera.move(dt, keysPressed)
+        updateHeadlights()
         // lights[0].position.set(sin(t), cos(t), cos(2f*t), 0f).normalize()
 
         gl.clearColor(0.3f, 0.0f, 0.3f, 1.0f)//## red, green, blue, alpha in [0, 1]

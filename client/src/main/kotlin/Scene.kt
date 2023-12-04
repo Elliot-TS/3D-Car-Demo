@@ -67,21 +67,26 @@ class Scene (
     val groundMesh = Mesh(groundMaterial, groundGeometry)
 
     // Lights
-    val lights = Array<Light>(3) { Light(it) }
+    val lights = Array<Light>(4) { Light(it) }
     init{
         // Environment Light
-        lights[1].position.set(0f, 0f, 0f, 0f)
-        lights[1].direction.set(0f, 0f, 0f, 0f)
-        lights[1].powerDensity.set(0.4f, 0.35f, 0.3f)
+        lights[0].position.set(0f, 0f, 0f, 0f)
+        lights[0].direction.set(0f, 0f, 0f, 0f)
+        lights[0].powerDensity.set(0.4f, 0.35f, 0.3f)
 
         // Directional Light
-        lights[0].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
-        lights[0].direction.set(-1f, 1f, -1f, 1f).normalize()
-        lights[0].powerDensity.set(10f, 1f, 0.95f)
+        lights[1].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
+        lights[1].direction.set(-1f, 1f, -1f, 1f).normalize()
+        lights[1].powerDensity.set(1f, 1f, 0.95f)
 
         // Positional Light
-        lights[2].position.set(0f, -5.6f, 20f, 1f)
+        lights[2].position.set(0f, 5.6f, 20f, 1f)
         lights[2].powerDensity.set(100f, 100f, 1000f)
+
+        // Spot Light
+        lights[3].position.set(0f, 5.6f, -20f, 1f)
+        lights[3].powerDensity.set(1000f, 100f, 100f)
+        lights[3].angle.set(0.2f, 0f, 0f)
     }
 
     // Game Objects
@@ -99,7 +104,7 @@ class Scene (
         gameObjects += GameObject(groundMesh).apply {
             position.set(0f, -6f, 0f)
             scale.set(1000f, 1000f, 1f)
-            pitch = 3.14f / 2f
+            pitch = -3.14f / 2f
         }
     }
 

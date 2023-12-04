@@ -1,5 +1,5 @@
 #version 300 es
-#define NUM_LIGHTS 1
+#define NUM_LIGHTS 4
 
 precision highp float;
 
@@ -56,16 +56,16 @@ void main(void) {
     vec3 radiance = vec3(0, 0, 0);
 
     for(int iLight=0; iLight<NUM_LIGHTS; iLight++){
-        // Environment (xyzw = 0)
+        // Environment (pos.xyzw = 0)
         //  lightDiff = vec3(1f,1f,1f);
-        //  lightDir = normal ;
-        // Directional (w=0):
+        //  lightDir = normal;
+        // Directional (pos.w=0):
         //  lightDiff = lights[iLight].position.xyz;
-        //  lightDif = lights[iLight].direction.xyz;
-        // Spot (w=1):
-        //  lightDiff = lights[iLight].position.xyz;
-        //  lightDif = lights[iLight].direction.xyz;
-        // Point (w=1):
+        //  lightDir = lights[iLight].direction.xyz;
+        // Spot (pos.w=1, dir.w != 0):
+        //  lightDiff = lights[iLight].position.xyz - worldPosition.xyz;
+        //  lightDir = normalize(lightDiff);
+        // Point (pos.w=1, dir.w = 0):
         //  lightDiff = lights[iLight].position.xyz - worldPosition.xyz;
         //  lightDir = normalize(lightDiff);
         
@@ -92,9 +92,11 @@ void main(void) {
             lights[iLight].powerDensity
             / distanceSquared;
 
-        //if (dot(normalize(lightDiff), lightDir) >= cos(lights[iLight].angle.x)) {
-            //powerDensity *= 0.f;
-        //}
+        if (
+            dot(lightDir, lights[iLight].direction.xyz) >= cos(lights[iLight].angle.x)
+       ) {
+            powerDensity *= 0.f;
+        }
 
 
         float cosa = clamp(

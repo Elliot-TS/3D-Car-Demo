@@ -20,6 +20,7 @@ class CarObject (
   override var move = object: Motion(this) {
     val car = gameObject as CarObject
     val speed = 0.7f
+    val steerSpeed = 2f
     var curve = 0.0f
 
     // Move the car forward/backward applying steering as needed
@@ -98,10 +99,10 @@ class CarObject (
       }
 
       if ("A" in keysPressed) {
-        steer(-dt)
+        steer(-steerSpeed * dt)
       }
       else if ("D" in keysPressed) {
-        steer(dt)
+        steer(steerSpeed * dt)
       }
       
       return true

@@ -22,8 +22,7 @@ uniform struct {
 uniform struct {
     vec4 position;
     vec4 direction;
-    vec3 powerDensity;
-    vec3 angle;
+    vec4 powerDensity;
 } lights[NUM_LIGHTS];
 
 out vec4 fragmentColor;
@@ -71,6 +70,7 @@ void main(void) {
         
         bool isEnvironmentLight = lights[iLight].position == vec4(0,0,0,0);
         bool isDirectionalLight = lights[iLight].position.w == 0.0f;
+        bool isSpotLight = (!isDirectionalLight) && (lights[iLight].direction.w != 0.0f);
 
         vec3 lightDiff = 
             lights[iLight].position.xyz - 
@@ -88,13 +88,14 @@ void main(void) {
             lights[iLight].direction.xyz :  // Use direction
             normalize(lightDiff); // If spotlight, use lightDiff
 
-        vec3 powerDensity =
-            lights[iLight].powerDensity
+        vec3 powerDensity = 
+            lights[iLight].powerDensity.xyz
             / distanceSquared;
 
         if (
-            dot(lightDir, lights[iLight].direction.xyz) >= cos(lights[iLight].angle.x)
-       ) {
+            isSpotLight
+            && dot(-lightDir, lights[iLight].direction.xyz) <= cos(lights[iLight].direction.w)
+        ) {
             powerDensity *= 0.f;
         }
 

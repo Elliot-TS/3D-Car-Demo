@@ -67,26 +67,33 @@ class Scene (
     val groundMesh = Mesh(groundMaterial, groundGeometry)
 
     // Lights
-    val lights = Array<Light>(4) { Light(it) }
+    val lights = Array<Light>(5) { Light(it) }
+    val leftHeadlight = lights[0]
+    val rightHeadlight = lights[1]
     init{
         // Environment Light
-        lights[0].position.set(0f, 0f, 0f, 0f)
-        lights[0].direction.set(0f, 0f, 0f, 0f)
-        lights[0].powerDensity.set(0.4f, 0.35f, 0.3f)
+        lights[2].position.set(0f, 0f, 0f, 0f)
+        lights[2].direction.set(0f, 0f, 0f, 0f)
+        lights[2].powerDensity.set(0.4f, 0.35f, 0.3f, 0f)
 
         // Directional Light
-        lights[1].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
-        lights[1].direction.set(-1f, 1f, -1f, 1f).normalize()
-        lights[1].powerDensity.set(1f, 1f, 0.95f)
+        lights[3].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
+        lights[3].direction.set(-1f, 1f, -1f, 1f).normalize()
+        lights[3].powerDensity.set(1f, 1f, 0.95f, 0f)
 
         // Positional Light
-        lights[2].position.set(0f, 5.6f, 20f, 1f)
-        lights[2].powerDensity.set(100f, 100f, 1000f)
+        lights[4].position.set(0f, 5.6f, 20f, 1f)
+        lights[4].direction.set(0f,0f,0f,0f)
+        lights[4].powerDensity.set(100f, 100f, 1000f, 0f)
 
-        // Spot Light
-        lights[3].position.set(0f, 5.6f, -20f, 1f)
-        lights[3].powerDensity.set(1000f, 100f, 100f)
-        lights[3].angle.set(0.2f, 0f, 0f)
+        // Head Lights
+        leftHeadlight.position.set(0f, 5.6f, -20f, 1f)
+        leftHeadlight.direction.set(0f,-1f,0f,0.9f)
+        leftHeadlight.powerDensity.set(1000f, 100f, 100f, 0f)
+
+        rightHeadlight.position.set(0f, 5.6f, -20f, 1f)
+        rightHeadlight.direction.set(0f,-1f,0f,0.9f)
+        rightHeadlight.powerDensity.set(1000f, 100f, 100f, 0f)
     }
 
     // Game Objects

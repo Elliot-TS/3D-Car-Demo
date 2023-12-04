@@ -38,6 +38,7 @@ class Scene (
         "media/posz512.jpg", "media/negz512.jpg"
     )  
     val chevyTexture = Texture2D(gl, "media/chevy/chevy.png")
+    val roadTexture = Texture2D(gl, "media/road.jpg")
 
     // Materials
     val backgroundMaterial = Material(backgroundProgram).apply{
@@ -47,10 +48,15 @@ class Scene (
         this["colorTexture"]?.set(chevyTexture)
         this["envTexture"]?.set( skyCubeTexture )
     }
+    val groundMaterial = Material(texturedProgram).apply {
+        this["colorTexture"]?.set(roadTexture)
+        this["envTexture"]?.set( skyCubeTexture )
+    }
 
     // Geometry
     val jsonLoader = JsonLoader()
     val texturedQuadGeometry = TexturedQuadGeometry(gl)
+    val groundGeometry = TexturedQuadGeometry(gl, 40f)
     val chevyChassisGeometries = jsonLoader.loadGeometries(gl, "media/chevy/chassis.json")
     val wheelGeometries = jsonLoader.loadGeometries( gl, "media/chevy/wheel.json")
 
@@ -58,23 +64,24 @@ class Scene (
     val backgroundMesh = Mesh(backgroundMaterial, texturedQuadGeometry)
     val chevyChassisMesh = Mesh(chevyMaterial, chevyChassisGeometries[0])
     val wheelMesh = Mesh(chevyMaterial, wheelGeometries[0])
+    val groundMesh = Mesh(groundMaterial, groundGeometry)
 
     // Lights
     val lights = Array<Light>(3) { Light(it) }
     init{
         // Environment Light
-        lights[0].position.set(0f, 0f, 0f, 0f)
-        lights[0].direction.set(0f, 0f, 0f, 0f)
-        lights[0].powerDensity.set(0.4f, 0.35f, 0.3f)
+        lights[1].position.set(0f, 0f, 0f, 0f)
+        lights[1].direction.set(0f, 0f, 0f, 0f)
+        lights[1].powerDensity.set(0.4f, 0.35f, 0.3f)
 
         // Directional Light
-        lights[1].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
-        lights[1].direction.set(-1f, 1f, -1f, 1f).normalize()
-        lights[1].powerDensity.set(1f, 1f, 0.95f)
+        lights[0].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
+        lights[0].direction.set(-1f, 1f, -1f, 1f).normalize()
+        lights[0].powerDensity.set(10f, 1f, 0.95f)
 
         // Positional Light
-        lights[2].position.set(0f, 10f, 20f, 1f)
-        lights[2].powerDensity.set(10f, 10f, 100f)
+        lights[2].position.set(0f, -5.6f, 20f, 1f)
+        lights[2].powerDensity.set(100f, 100f, 1000f)
     }
 
     // Game Objects
@@ -89,6 +96,11 @@ class Scene (
         gameObjects += avatar
         gameObjects.addAll(avatar.wheels)
         gameObjects += GameObject(backgroundMesh)
+        gameObjects += GameObject(groundMesh).apply {
+            position.set(0f, -6f, 0f)
+            scale.set(1000f, 1000f, 1f)
+            pitch = 3.14f / 2f
+        }
     }
 
     // LABTODO: replace with 3D camera

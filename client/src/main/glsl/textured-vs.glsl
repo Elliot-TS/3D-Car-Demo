@@ -5,17 +5,17 @@ in vec4 vertexTexCoord;
 in vec3 vertexNormal;
 
 uniform struct{
-  mat4 modelMatrix;
-  mat4 modelMatrixInverse;  
+    mat4 modelMatrix;
+    mat4 modelMatrixInverse;  
 } gameObject;
 
 uniform struct{
-  vec3 position;
-  mat4 viewProjMatrix; 
+    vec3 position;
+    mat4 viewProjMatrix; 
 } camera;
 
 uniform struct {
-  float time;
+    float time;
 } scene;
 
 out vec4 modelPosition;
@@ -24,12 +24,12 @@ out vec4 texCoord;
 out vec3 worldNormal;
 
 void main(void) {
-  modelPosition = vertexPosition;
-  gl_Position = vertexPosition * gameObject.modelMatrix * camera.viewProjMatrix;
-  worldPosition = gl_Position;
-  texCoord = vertexTexCoord;
-  worldNormal = (
-    gameObject.modelMatrixInverse *
-    vec4(vertexNormal, 0)
+    modelPosition = vertexPosition;
+    worldPosition = vertexPosition * gameObject.modelMatrix;
+    gl_Position = vertexPosition * gameObject.modelMatrix * camera.viewProjMatrix;
+    texCoord = vertexTexCoord;
+    worldNormal = (
+        gameObject.modelMatrixInverse *
+        vec4(vertexNormal, 0)
     ).xyz;
 }

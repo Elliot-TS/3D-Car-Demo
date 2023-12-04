@@ -1,5 +1,5 @@
 #version 300 es
-#define NUM_LIGHTS 3
+#define NUM_LIGHTS 1
 
 precision highp float;
 
@@ -7,11 +7,12 @@ in vec4 texCoord;
 in vec3 worldNormal;
 in vec4 worldPosition;
 in vec4 modelPosition;
-
+/*
 uniform struct{
     vec3 position;
     mat4 viewProjMatrix; 
 } camera;
+*/
 
 uniform struct {
     sampler2D colorTexture; 
@@ -45,7 +46,7 @@ vec3 noiseGrad(vec3 r) {
 }
 
 void main(void) {
-    vec3 viewDir = normalize(camera.position - worldPosition.xyz);
+    //vec3 viewDir = normalize(camera.position - worldPosition.xyz);
     vec3 normal = normalize(worldNormal);
     //normal += noiseGrad(modelPosition.xyz * 50.0) * 0.05;
     //normal = normalize(normal);
@@ -76,7 +77,7 @@ void main(void) {
             worldPosition.xyz * lights[iLight].position.w;
 
         float distanceSquared = 
-            isEnvironmentLight ?
+            isDirectionalLight ?
             1.0f :
             dot(lightDiff, lightDiff);
 
@@ -105,6 +106,7 @@ void main(void) {
             cosa * // n*l
             texture(material.colorTexture, texCoord.xy).rgb; // BRDF
     }
-
+    //fragmentColor = vec4(abs(worldPosition.xyz/100.f), 1);
     fragmentColor = vec4(radiance, 1);
+    //fragmentColor = vec4(normal, 1);
 }

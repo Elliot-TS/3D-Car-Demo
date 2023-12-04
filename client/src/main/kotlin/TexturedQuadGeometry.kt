@@ -3,7 +3,7 @@ import org.khronos.webgl.Float32Array
 import org.khronos.webgl.Uint16Array
 import vision.gears.webglmath.Geometry
 
-class TexturedQuadGeometry(val gl : WebGL2RenderingContext) : Geometry() {
+class TexturedQuadGeometry(val gl : WebGL2RenderingContext, val repeat: Float = 1f) : Geometry() {
    
   val vertexBuffer = gl.createBuffer()
   init{
@@ -36,10 +36,10 @@ class TexturedQuadGeometry(val gl : WebGL2RenderingContext) : Geometry() {
     gl.bindBuffer(GL.ARRAY_BUFFER, vertexTexCoordBuffer)
     gl.bufferData(GL.ARRAY_BUFFER,
       Float32Array( arrayOf<Float>(
-         0.0f,  1.0f, 
+         0.0f,  repeat, 
          0.0f,  0.0f, 
-         1.0f,  1.0f, 
-         1.0f,  0.0f
+         repeat,  repeat, 
+         repeat,  0.0f
          )),
       GL.STATIC_DRAW)
   }    

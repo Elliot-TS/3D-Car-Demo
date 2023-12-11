@@ -1,0 +1,9 @@
+Environment Background
+Ground (there's a seamless road texture tiled across the plane)
+Directional Light
+Point Light
+Spot Light
+Headlights
+(Also Environmental light, but that wasn't an assignment)
+Diffuse
+Environment Mapping

@@ -158,8 +158,9 @@ class Scene (
     // LABTODO: replace with 3D camera
     val camera = PerspectiveCamera().apply{
         position.set(30f, 10f, 20f)
-        pitch = -PI.toFloat() / 2f
+        pitch = -PI.toFloat() / 4f
         yaw = PI.toFloat()
+        trackObject = avatar
         update()
     }
 
@@ -186,6 +187,7 @@ class Scene (
 
         //LABTODO: move camera
         camera.move(dt, keysPressed)
+        
         updateHeadlights()
         // lights[0].position.set(sin(t), cos(t), cos(2f*t), 0f).normalize()
 

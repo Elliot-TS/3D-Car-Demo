@@ -7,6 +7,7 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.pow
 
 class CarObject (
   val chassisMesh: Mesh,
@@ -19,7 +20,7 @@ class CarObject (
 
   override var move = object: Motion(this) {
     val car = gameObject as CarObject
-    val speed = 0.7f
+    val speed = 1.3f
     val steerSpeed = 2f
     var curve = 0.0f
 
@@ -31,6 +32,9 @@ class CarObject (
       val s = PI.toFloat()*5f*amount // curve distance that the car moves
       if (curve == 0.0f) {
         car.position += Vec3(0f, 0f, s)
+        wheels.forEach {
+            it.pitch += s / 5f
+        }
       }
       else {
         val baseDistance = abs(length/curve) + width/2f
@@ -54,13 +58,27 @@ class CarObject (
         car.position.set((car.position.xyz1 * rotMatrix).xyz)
         car.yaw += deltaAngle
 
-        //frontRightWheel.position.set(circleOriginLeft.xyz)
-
+        // Rotate Wheels
+        val tld = sqrt(baseDistance.pow(2) + length.pow(2)) * sign
+        val trd = sqrt((baseDistance + width).pow(2) + length.pow(2)) * sign
+        val bld = baseDistance * sign
+        val brd = (baseDistance + width) * sign
+        
+        if (sign > 0) {
+          frontLeftWheel.pitch += tld * deltaAngle / 5f
+          frontRightWheel.pitch += trd * deltaAngle / 5f
+          backLeftWheel.pitch += bld * deltaAngle / 5f
+          backRightWheel.pitch += brd * deltaAngle / 5f
+        }
+        else {
+          frontRightWheel.pitch += tld * deltaAngle / 5f
+          frontLeftWheel.pitch += trd * deltaAngle / 5f
+          backRightWheel.pitch += bld * deltaAngle / 5f
+          backLeftWheel.pitch += brd * deltaAngle / 5f
+        }
+        
       }
 
-      car.wheels.forEach {
-          it.pitch += amount * PI.toFloat()*2.0f
-      }
     }
 
     // Turn the wheels left/right

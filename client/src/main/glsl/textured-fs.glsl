@@ -15,6 +15,7 @@ uniform struct{
 
 uniform struct {
     sampler2D colorTexture; 
+    sampler2D normalTexture; 
     samplerCube envTexture;
     float reflective;
 } material;
@@ -46,11 +47,9 @@ vec3 noiseGrad(vec3 r) {
 
 void main(void) {
     vec3 viewDir = normalize(camera.position - worldPosition.xyz);
-    vec3 normal = normalize(worldNormal);
-    //normal += noiseGrad(modelPosition.xyz * 50.0) * 0.05;
-    //normal = normalize(normal);
-    //vec3 reflDir = reflect(-viewDir, normal);
-    //fragmentColor = texture(material.envTexture, reflDir);
+    vec3 normal = texture(material.normalTexture, texCoord.xy).xzy - 0.5f;
+    if (normal == vec3(0,0,0)) normal = normalize(worldNormal);
+    else normal = normalize(mix(normal, worldNormal, 0.6f));
 
     if (material.reflective == 1.f) {
         vec3 reflDir = reflect(-viewDir, normal);
@@ -97,13 +96,15 @@ void main(void) {
                 lights[iLight].powerDensity.xyz
                 / distanceSquared;
 
-            if (
-                    isSpotLight
-                    && dot(-lightDir, lights[iLight].direction.xyz) <= cos(lights[iLight].direction.w)
-               ) {
+            if (isSpotLight && 
+                dot(
+                    -lightDir, 
+                    lights[iLight].direction.xyz
+                ) 
+                <= cos(lights[iLight].direction.w)
+            ) {
                 powerDensity *= 0.f;
             }
-
 
             float cosa = clamp(
                     dot(lightDir, normal),
@@ -116,6 +117,6 @@ void main(void) {
         }
         //fragmentColor = vec4(abs(worldPosition.xyz/100.f), 1);
         fragmentColor = vec4(radiance, 1);
-        //fragmentColor = vec4(normal, 1);
+        //fragmentColor += vec4(normal, 1);
     }
 }

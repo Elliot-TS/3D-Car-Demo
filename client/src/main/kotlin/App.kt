@@ -32,6 +32,8 @@ class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
     document.onkeyup = { 
       event : KeyboardEvent ->
       keysPressed.remove( keyNames[event.keyCode] )
+      if (keyNames[event.keyCode] == "SPACE")
+          scene.toggleNormals()
     }
 
     canvas.onmousedown = { 

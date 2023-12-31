@@ -40,7 +40,9 @@ class Scene (
     val chevyTexture = Texture2D(gl, "media/chevy/chevy.png")
     val slowpokeTexture = Texture2D(gl, "media/slowpoke/YadonDh.png")
     val slowpokeEyeTexture = Texture2D(gl, "media/slowpoke/YadonEyeDh.png")
-    val roadTexture = Texture2D(gl, "media/road.jpg")
+    val roadTexture = Texture2D(gl, "media/road/road_diff.jpg")
+    val roadNormalMap = Texture2D(gl, "media/road/road_nor.jpg")
+    val blackNormalMap = Texture2D(gl, "media/black_normal_map.png")
 
     // Materials
     val backgroundMaterial = Material(backgroundProgram).apply{
@@ -48,22 +50,26 @@ class Scene (
     }
     val chevyMaterial = Material(texturedProgram).apply {
         this["colorTexture"]?.set(chevyTexture)
+        this["normalTexture"]?.set(blackNormalMap)
         this["envTexture"]?.set( skyCubeTexture )
         this["reflective"]?.set(0f)
     }
     val groundMaterial = Material(texturedProgram).apply {
         this["colorTexture"]?.set(roadTexture)
+        this["normalTexture"]?.set(roadNormalMap)
         this["envTexture"]?.set( skyCubeTexture )
         this["reflective"]?.set(0f)
     }
     val slowpokeMaterials = arrayOf(
         Material(texturedProgram).apply {
             this["colorTexture"]?.set(slowpokeTexture)
+            this["normalTexture"]?.set(blackNormalMap)
             this["envTexture"]?.set( skyCubeTexture )
             this["reflective"]?.set(1f)
         },
         Material(texturedProgram).apply {
             this["colorTexture"]?.set(slowpokeEyeTexture)
+            this["normalTexture"]?.set(blackNormalMap)
             this["envTexture"]?.set( skyCubeTexture )
             this["reflective"]?.set(1f)
         }
@@ -101,17 +107,17 @@ class Scene (
         // Environment Light
         lights[2].position.set(0f, 0f, 0f, 0f)
         lights[2].direction.set(0f, 0f, 0f, 0f)
-        lights[2].powerDensity.set(0.4f, 0.35f, 0.3f, 0f)
+        lights[2].powerDensity.set(0.2f, 0.15f, 0.3f, 0f)
 
         // Directional Light
-        lights[3].position.set(1.0f, 1.0f, 1.0f, 0f).normalize()
+        lights[3].position.set(1.0f, 1.5f, 1.0f, 0f).normalize()
         lights[3].direction.set(-1f, 1f, -1f, 1f).normalize()
-        lights[3].powerDensity.set(1f, 1f, 0.95f, 0f)
+        lights[3].powerDensity.set(0.17f, 0.17f, 0.2f, 0f)
 
         // Positional Light
-        lights[4].position.set(0f, 5.6f, 20f, 1f)
+        lights[4].position.set(0f, 7.6f, 20f, 1f)
         lights[4].direction.set(0f,0f,0f,0f)
-        lights[4].powerDensity.set(100f, 100f, 1000f, 0f)
+        lights[4].powerDensity.set(1000f, 300f, 100f, 0f)
 
         // Head Lights
         leftHeadlight.powerDensity.set(700f, 600f, 300f, 0f)
@@ -150,14 +156,11 @@ class Scene (
             scale.set(1000f, 1000f, 1f)
             pitch = -3.14f / 2f
         }
-        gameObjects += GameObject(*slowpokeMeshes).apply {
-            position.set(10f, 3f, 10f)
-        }
     }
 
     // LABTODO: replace with 3D camera
     val camera = PerspectiveCamera().apply{
-        position.set(30f, 10f, 20f)
+        position.set(30f, 15f, -40f)
         pitch = -PI.toFloat() / 4f
         yaw = PI.toFloat()
         trackObject = avatar
@@ -176,6 +179,17 @@ class Scene (
         //LABTODO: enable depth test
         gl.enable(GL.DEPTH_TEST)
         addComponentsAndGatherUniforms()
+    }
+
+    var normalsOn = true
+    fun toggleNormals() {
+        groundMaterial.apply {
+            if (normalsOn)
+                this["normalTexture"]?.set(blackNormalMap)
+            else 
+                this["normalTexture"]?.set(roadNormalMap)
+            normalsOn = !normalsOn
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
